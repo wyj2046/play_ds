@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <time.h>
 
 
 void swap(int* x, int* y)    //如果两个数相等，就不执行位运算交换。因为如果两数相等，结果会是0
@@ -291,6 +292,81 @@ int random_partition(int array[], int low, int high)
     return partition(array, low, high);
 }
 
+int get_middle_number(int a, int b, int c)
+{
+    if (c < b)
+    {
+	swap(&c, &b);
+    }
+    if (b < a)    //经过这两个交换，a变为最小的
+    {
+	swap(&b, &a);
+    }
+    if (b < c)
+    {
+	return b;
+    }
+    else
+    {
+	return c;
+    }
+}
+
+int three_one_partition(int array[], int low, int high)
+{
+    //随机取3个数
+    int i = random(low, high);
+    int j = random(low, high);
+    int k = random(low, high);
+
+    //取出中间数
+    int middle = get_middle_number(array[i], array[j], array[k]);
+
+    //将中间数和array[high]交换
+    if (array[i] == middle)
+    {
+	swap(&array[i], &array[high]);
+    }
+    else if (array[j] == middle)
+    {
+	swap(&array[j], &array[high]);
+    }
+    else if (array[k] == middle)
+    {
+	swap(&array[k], &array[high]);
+    }
+
+    return partition(array, low ,high);
+}
+
+void quick_sort2(int array[], int low, int high)
+{
+    while (low < high)
+    {
+	int pivot = partition(array, low, high);
+	quick_sort2(array, low, pivot-1);
+	low = pivot + 1;
+    }
+}
+
+void quick_sort3(int array[], int low, int high)
+{
+    while (low < high)
+    {
+	int pivot = three_one_partition(array, low, high);
+	if (pivot - low < high - pivot)
+	{
+	    quick_sort3(array, low, pivot-1);
+	    low = pivot+1;
+	}
+	else
+	{
+	    quick_sort3(array, pivot+1, high);
+	    high = pivot-1;
+	}
+    }
+}
+
 int main(int argc, char *argv[])
 {
     // int array[] = {2, 8, 7, 1, 3, 5, 6, 4};
@@ -304,7 +380,7 @@ int main(int argc, char *argv[])
     // shell_sort(array, array_length);
     // heap_sort(array, array_length);
     // merge_sort(array, 0, array_length);
-    quick_sort(array, 0, array_length-1);    //快排这个地方调用的时候第三个参数到底减不减1？效果都一样
+    quick_sort3(array, 0, array_length-1);    //快排这个地方调用的时候第三个参数到底减不减1？效果都一样
 					     //调用时第三个参数应该为array_length-1，
 					     //因为算法导论中的数组是这么写的A[p,r] A[r]为边界元素
     for (int i = 0; i < array_length; ++i)
@@ -312,6 +388,7 @@ int main(int argc, char *argv[])
 	printf ("%d ", array[i]);
     }
     printf ("\n");
+
     return 0;
 }
 
