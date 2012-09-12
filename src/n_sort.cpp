@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -99,6 +100,35 @@ void radix_sort(T array[], int length)
     delete [] digit_array;
 }
 
+template <typename T>
+void bucket_sort(T array[], int length)
+{
+    vector<T> bucket[11];
+
+    for (int i = 0; i < length; ++i)
+    {
+	int key = array[i];
+	int position = key / 10;
+	int j = bucket[position].size() - 1;	
+	bucket[position].push_back(key);
+
+	while (j >= 0 && bucket[position][j] > key)
+	{
+	    swap(bucket[position][j], bucket[position][j+1]);
+	    --j;
+	}
+    }
+
+    int index = 0; 
+    for (int i = 0; i < 11; ++i)
+    {
+	for (int j = 0; j < bucket[i].size(); ++j)
+	{
+	    array[index++] = bucket[i][j];
+	}
+    }
+}
+
 int main(int argc, char *argv[])
 {
     int array[] = {43,65,34,5,8,34,23,0,45,34};
@@ -114,7 +144,8 @@ int main(int argc, char *argv[])
     // cout << endl;
     // delete [] array_B;
 
-    radix_sort(array, array_length);
+    // radix_sort(array, array_length);
+    bucket_sort(array, array_length);
     for (int i = 0; i < array_length; ++i)
     {
 	cout << array[i] << ' ';
